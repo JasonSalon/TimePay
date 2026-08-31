@@ -20,6 +20,7 @@ public partial class UserDashboard : Page
     private TimerWidgetWindow? _miniWidgetWindow;
     private Settings? _settings;
     private Currency _currency = Currency.PHP;
+    private bool _triggeredFiveSecondsWarning = false;
 
     public UserDashboard()
     {
@@ -34,6 +35,9 @@ public partial class UserDashboard : Page
 
     private async void UserDashboard_Loaded(object sender, RoutedEventArgs e)
     {
+        var mainWindow = Window.GetWindow(this) as MainWindow;
+        mainWindow?.ExitKioskMode();
+
         await InitializeDashboardAsync();
         _uiTimer.Start();
     }
@@ -82,11 +86,14 @@ public partial class UserDashboard : Page
         var session = tickResult.Session;
         var remaining = tickResult.RemainingTime;
 
-        // If session expired or locked, navigate to Lock Screen
+        // If session expired or locked, enforce Kiosk and navigate to Lock Screen
         if (tickResult.AppState == AppState.Expired || tickResult.AppState == AppState.Locked || session == null)
         {
             _uiTimer.Stop();
             CloseMiniWidget();
+
+            var mainWindow = Window.GetWindow(this) as MainWindow;
+            mainWindow?.EnterKioskMode();
 
             var nav = App.Services.GetRequiredService<NavigationService>();
             var lockScreen = App.Services.GetRequiredService<LockScreen>();
@@ -102,6 +109,12 @@ public partial class UserDashboard : Page
         bool isLowTime = false;
         bool isPaused = session.Status == SessionStatus.Paused;
 
+        // Reset 5s warning trigger if time was added
+        if (remaining.TotalSeconds > 10)
+        {
+            _triggeredFiveSecondsWarning = false;
+        }
+
         // Status & Color Coding (spec Section 38)
         if (isPaused)
         {
@@ -111,6 +124,25 @@ public partial class UserDashboard : Page
             TimerDisplay.Foreground = (Brush)FindResource("WarningBrush");
             WarningBannerText.Text = "TIMER PAUSED by administrator.";
             WarningBanner.Visibility = Visibility.Visible;
+        }
+        else if (remaining.TotalSeconds <= 5.0 && remaining.TotalSeconds > 0)
+        {
+            isLowTime = true;
+            StatusText.Text = "● LOCKING";
+            StatusText.Foreground = (Brush)FindResource("DangerBrush");
+            StatusBadge.Background = new SolidColorBrush(Color.FromArgb(50, 255, 71, 87));
+            TimerDisplay.Foreground = (Brush)FindResource("DangerBrush");
+            WarningBannerText.Text = "🚨 5 SECONDS REMAINING: Computer is locking now!";
+            WarningBanner.Visibility = Visibility.Visible;
+
+            if (!_triggeredFiveSecondsWarning)
+            {
+                _triggeredFiveSecondsWarning = true;
+                if (_settings?.SoundEnabled ?? true)
+                {
+                    AudioAlertService.PlayFiveSecondsCountdownSound();
+                }
+            }
         }
         else if (remaining.TotalMinutes <= 1)
         {

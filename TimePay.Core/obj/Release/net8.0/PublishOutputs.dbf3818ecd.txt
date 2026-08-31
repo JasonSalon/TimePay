@@ -1,0 +1,3 @@
+C:\TimePay\TimePay\publish\App\TimePay.Core.dll
+C:\TimePay\TimePay\publish\App\TimePay.Core.deps.json
+C:\TimePay\TimePay\publish\App\TimePay.Core.pdb

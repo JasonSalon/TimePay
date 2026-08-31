@@ -26,4 +26,15 @@ public interface IStartupService
     /// Sets whether TimePay starts automatically with Windows.
     /// </summary>
     bool SetAutoStart(bool enable);
+
+    /// <summary>
+    /// Automatically applies Task Manager policies (disables for Guests, enables for Admins).
+    /// </summary>
+    void ApplyRolePolicies();
+
+    /// <summary>
+    /// Ensures TimePay is registered in all applicable auto-start locations (HKLM, HKCU, Startup folders).
+    /// </summary>
+    void EnsureAllUserStartup();
 }
+

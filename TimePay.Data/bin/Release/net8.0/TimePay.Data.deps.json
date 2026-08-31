@@ -10,7 +10,6 @@
         "dependencies": {
           "Microsoft.EntityFrameworkCore.Design": "8.0.30",
           "Microsoft.EntityFrameworkCore.Sqlite": "8.0.30",
-          "Microsoft.NET.ILLink.Tasks": "8.0.30",
           "TimePay.Core": "1.0.0"
         },
         "runtime": {
@@ -442,7 +441,6 @@
           }
         }
       },
-      "Microsoft.NET.ILLink.Tasks/8.0.30": {},
       "Mono.TextTemplating/2.2.1": {
         "dependencies": {
           "System.CodeDom": "4.4.0"
@@ -886,13 +884,6 @@
       "sha512": "sha512-bXJEZrW9ny8vjMF1JV253WeLhpEVzFo1lyaZu1vQ4ZxWUlVvknZ/+ftFgVheLubb4eZPSwwxBeqS1JkCOjxd8g==",
       "path": "microsoft.extensions.primitives/8.0.0",
       "hashPath": "microsoft.extensions.primitives.8.0.0.nupkg.sha512"
-    },
-    "Microsoft.NET.ILLink.Tasks/8.0.30": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-SfmwuZjUPBTEoBMAsXZ/hWkaEK9oL+Y/UtAx7N6RyWHfcMt9J0ExrNPuOgTyPbCXIyiTBFsxFNrPLEZNPmJcvA==",
-      "path": "microsoft.net.illink.tasks/8.0.30",
-      "hashPath": "microsoft.net.illink.tasks.8.0.30.nupkg.sha512"
     },
     "Mono.TextTemplating/2.2.1": {
       "type": "package",

@@ -282,6 +282,8 @@ public partial class AdminDashboard : Page
         using var scope = App.Services.CreateScope();
         var auditLogger = scope.ServiceProvider.GetRequiredService<IAuditLogger>();
         var adminSession = App.Services.GetRequiredService<AdminSessionService>();
+        var startupService = App.Services.GetRequiredService<IStartupService>();
+        var sessionManager = scope.ServiceProvider.GetRequiredService<ISessionManager>();
 
         await auditLogger.LogAsync(AuditAction.AdminLoginSuccess,
             adminSession.CurrentAdminUsername ?? "admin", "Admin logged out");
@@ -291,8 +293,32 @@ public partial class AdminDashboard : Page
         _uiTimer.Stop();
 
         var nav = App.Services.GetRequiredService<NavigationService>();
-        var login = App.Services.GetRequiredService<AdminLogin>();
-        nav.NavigateTo(login);
+        var mainWindow = Window.GetWindow(this) as MainWindow;
+
+        if (!startupService.IsRunningAsWindowsAdmin())
+        {
+            var session = await sessionManager.GetCurrentSessionAsync();
+            var remaining = await sessionManager.GetRemainingTimeAsync();
+
+            if (session != null && session.Status == SessionStatus.Active && remaining > TimeSpan.Zero)
+            {
+                mainWindow?.ExitKioskMode();
+                var userDashboard = App.Services.GetRequiredService<UserDashboard>();
+                nav.NavigateTo(userDashboard);
+            }
+            else
+            {
+                mainWindow?.EnterKioskMode();
+                var lockScreen = App.Services.GetRequiredService<LockScreen>();
+                nav.NavigateTo(lockScreen);
+            }
+        }
+        else
+        {
+            mainWindow?.ExitKioskMode();
+            var login = App.Services.GetRequiredService<AdminLogin>();
+            nav.NavigateTo(login);
+        }
         nav.ClearHistory();
     }
 

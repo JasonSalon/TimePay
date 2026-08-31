@@ -25,32 +25,49 @@ Write-Host ""
 
 $systemPolicyKey = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"
 $userPolicyKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System"
+$systemExplorerPolicyKey = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer"
+$userExplorerPolicyKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"
 
-if (-not (Test-Path $systemPolicyKey)) {
-    New-Item -Path $systemPolicyKey -Force | Out-Null
-}
-if (-not (Test-Path $userPolicyKey)) {
-    New-Item -Path $userPolicyKey -Force | Out-Null
-}
+if (-not (Test-Path $systemPolicyKey)) { New-Item -Path $systemPolicyKey -Force | Out-Null }
+if (-not (Test-Path $userPolicyKey)) { New-Item -Path $userPolicyKey -Force | Out-Null }
+if (-not (Test-Path $systemExplorerPolicyKey)) { New-Item -Path $systemExplorerPolicyKey -Force | Out-Null }
+if (-not (Test-Path $userExplorerPolicyKey)) { New-Item -Path $userExplorerPolicyKey -Force | Out-Null }
 
 if ($DisableLockdown) {
-    Write-Host "[*] Re-enabling Task Manager and Windows system tools..." -ForegroundColor Yellow
+    Write-Host "[*] Re-enabling Task Manager, Volume Controls, and Windows system tools..." -ForegroundColor Yellow
     
     Remove-ItemProperty -Path $systemPolicyKey -Name "DisableTaskMgr" -ErrorAction SilentlyContinue
     Remove-ItemProperty -Path $userPolicyKey -Name "DisableTaskMgr" -ErrorAction SilentlyContinue
     Remove-ItemProperty -Path $systemPolicyKey -Name "DisableLockWorkstation" -ErrorAction SilentlyContinue
     Remove-ItemProperty -Path $systemPolicyKey -Name "DisableChangePassword" -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path $systemExplorerPolicyKey -Name "NoWinKeys" -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path $userExplorerPolicyKey -Name "NoWinKeys" -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path $systemExplorerPolicyKey -Name "HideSCAVolume" -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path $userExplorerPolicyKey -Name "HideSCAVolume" -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path $systemExplorerPolicyKey -Name "SettingsPageVisibility" -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path $userExplorerPolicyKey -Name "SettingsPageVisibility" -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path $userExplorerPolicyKey -Name "DisallowRun" -ErrorAction SilentlyContinue
+    Remove-Item -Path "$userExplorerPolicyKey\DisallowRun" -Recurse -Force -ErrorAction SilentlyContinue
 
-    Write-Host "[+] Task Manager is now ENABLED." -ForegroundColor Green
+    Write-Host "[+] Task Manager, Volume Controls, and Windows Keys are now ENABLED." -ForegroundColor Green
 } else {
-    Write-Host "[*] Disabling Task Manager and hardening guest access..." -ForegroundColor Yellow
+    Write-Host "[*] Disabling Task Manager, Volume Controls, Windows Hotkeys, and hardening guest access..." -ForegroundColor Yellow
 
     # Disable Task Manager (Ctrl+Shift+Esc, Ctrl+Alt+Del -> Task Manager disabled)
     Set-ItemProperty -Path $systemPolicyKey -Name "DisableTaskMgr" -Value 1 -Type DWord -Force | Out-Null
     Set-ItemProperty -Path $userPolicyKey -Name "DisableTaskMgr" -Value 1 -Type DWord -Force | Out-Null
+    Set-ItemProperty -Path $systemPolicyKey -Name "DisableLockWorkstation" -Value 1 -Type DWord -Force | Out-Null
+    Set-ItemProperty -Path $systemPolicyKey -Name "DisableChangePassword" -Value 1 -Type DWord -Force | Out-Null
 
-    Write-Host "[+] Task Manager has been DISABLED." -ForegroundColor Green
-    Write-Host "    Guests/customers will now be unable to open Task Manager or kill TimePay." -ForegroundColor Green
+    # Disable Windows Hotkeys (Win+D, Win+R, Win+E, Win+X, etc.)
+    Set-ItemProperty -Path $systemExplorerPolicyKey -Name "NoWinKeys" -Value 1 -Type DWord -Force | Out-Null
+    Set-ItemProperty -Path $userExplorerPolicyKey -Name "NoWinKeys" -Value 1 -Type DWord -Force | Out-Null
+
+    # Remove HKLM volume restrictions so Admin is never blocked
+    Remove-ItemProperty -Path $systemExplorerPolicyKey -Name "HideSCAVolume" -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path $systemExplorerPolicyKey -Name "SettingsPageVisibility" -ErrorAction SilentlyContinue
+
+    Write-Host "[+] Security restrictions applied. Guest users cannot adjust volume or kill TimePay." -ForegroundColor Green
 }
 
 Write-Host ""

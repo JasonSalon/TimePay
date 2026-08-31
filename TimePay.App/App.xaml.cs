@@ -55,6 +55,7 @@ public partial class App : Application
                 services.AddSingleton<AdminSessionService>();
                 services.AddSingleton<IpcClient>();
                 services.AddSingleton<IStartupService, WindowsStartupService>();
+                services.AddSingleton<KeyboardHookService>();
 
                 // Views (transient so each navigation creates a fresh instance)
                 services.AddTransient<MainWindow>();
@@ -87,13 +88,37 @@ public partial class App : Application
 
         // Wire up admin session timeout
         var adminSession = Services.GetRequiredService<AdminSessionService>();
-        adminSession.SessionTimedOut += (_, _) =>
+        adminSession.SessionTimedOut += async (_, _) =>
         {
-            Dispatcher.Invoke(() =>
+            await Dispatcher.InvokeAsync(async () =>
             {
-                // On timeout, navigate back to lock/user screen
-                var loginPage = Services.GetRequiredService<AdminLogin>();
-                nav.NavigateTo(loginPage);
+                using var scope = Services.CreateScope();
+                var startupSvc = Services.GetRequiredService<IStartupService>();
+                var sessionMgr = scope.ServiceProvider.GetRequiredService<ISessionManager>();
+                var remainingTime = await sessionMgr.GetRemainingTimeAsync();
+                var currentSession = await sessionMgr.GetCurrentSessionAsync();
+
+                if (!startupSvc.IsRunningAsWindowsAdmin())
+                {
+                    if (currentSession != null && currentSession.Status == SessionStatus.Active && remainingTime > TimeSpan.Zero)
+                    {
+                        mainWindow.ExitKioskMode();
+                        var userDashboard = Services.GetRequiredService<UserDashboard>();
+                        nav.NavigateTo(userDashboard);
+                    }
+                    else
+                    {
+                        mainWindow.EnterKioskMode();
+                        var lockScreen = Services.GetRequiredService<LockScreen>();
+                        nav.NavigateTo(lockScreen);
+                    }
+                }
+                else
+                {
+                    mainWindow.ExitKioskMode();
+                    var loginPage = Services.GetRequiredService<AdminLogin>();
+                    nav.NavigateTo(loginPage);
+                }
                 nav.ClearHistory();
             });
         };
@@ -111,11 +136,16 @@ public partial class App : Application
         var sessionManager = scope.ServiceProvider.GetRequiredService<ISessionManager>();
         var startupService = Services.GetRequiredService<IStartupService>();
 
+        // Ensure auto-startup for all user logons
+        startupService.EnsureAllUserStartup();
+
+        // Automatically enforce role-based security: Disable Task Manager for Guests, Enable for Admins
+        startupService.ApplyRolePolicies();
+
         if (!await authService.AnyAdminExistsAsync())
         {
             // First launch — show setup wizard
-            mainWindow.WindowState = WindowState.Normal;
-            mainWindow.Topmost = false;
+            mainWindow.ExitKioskMode();
             var wizard = Services.GetRequiredService<SetupWizard>();
             nav.NavigateTo(wizard);
         }
@@ -128,8 +158,7 @@ public partial class App : Application
             if (isWindowsAdmin)
             {
                 // When logged in as Windows Administrator, open directly to Admin Login (normal windowed mode, no lock screen trap)
-                mainWindow.WindowState = WindowState.Normal;
-                mainWindow.Topmost = false;
+                mainWindow.ExitKioskMode();
                 var adminLogin = Services.GetRequiredService<AdminLogin>();
                 nav.NavigateTo(adminLogin);
             }
@@ -139,16 +168,14 @@ public partial class App : Application
                 if (session != null && session.Status == SessionStatus.Active && remaining > TimeSpan.Zero)
                 {
                     // Active purchased time available -> User Dashboard with top-right HUD
-                    mainWindow.WindowState = WindowState.Normal;
-                    mainWindow.Topmost = false;
+                    mainWindow.ExitKioskMode();
                     var userDashboard = Services.GetRequiredService<UserDashboard>();
                     nav.NavigateTo(userDashboard);
                 }
                 else
                 {
-                    // No time or expired -> Enforce Fullscreen Lock Screen
-                    mainWindow.WindowState = WindowState.Maximized;
-                    mainWindow.Topmost = true;
+                    // No time or expired -> Enforce Fullscreen Kiosk Lock Screen
+                    mainWindow.EnterKioskMode();
                     var lockScreen = Services.GetRequiredService<LockScreen>();
                     nav.NavigateTo(lockScreen);
                 }

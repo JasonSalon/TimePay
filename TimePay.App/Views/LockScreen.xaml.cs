@@ -24,13 +24,9 @@ public partial class LockScreen : Page
 
     private async void LockScreen_Loaded(object sender, RoutedEventArgs e)
     {
-        // Enforce full coverage on main window
-        var mainWindow = Window.GetWindow(this);
-        if (mainWindow != null)
-        {
-            mainWindow.WindowState = WindowState.Maximized;
-            mainWindow.Topmost = true;
-        }
+        // Enforce full coverage & kiosk lockdown
+        var mainWindow = Window.GetWindow(this) as MainWindow;
+        mainWindow?.EnterKioskMode();
 
         await LoadDataAsync();
     }
@@ -146,12 +142,9 @@ public partial class LockScreen : Page
                 var adminSession = App.Services.GetRequiredService<AdminSessionService>();
                 adminSession.Login(admin.Id, admin.Username);
 
-                // Reset Window normal topmost behavior for admin mode
-                var mainWindow = Window.GetWindow(this);
-                if (mainWindow != null)
-                {
-                    mainWindow.Topmost = false;
-                }
+                // Exit Kiosk Mode for admin session
+                var mainWindow = Window.GetWindow(this) as MainWindow;
+                mainWindow?.ExitKioskMode();
 
                 // Clear sensitive fields
                 AdminPasswordBox.Clear();

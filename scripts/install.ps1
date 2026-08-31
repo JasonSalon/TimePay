@@ -99,9 +99,20 @@ $shortcut2.WorkingDirectory = "$installDir\App"
 $shortcut2.Description = "TimePay Windows PC Time Management"
 $shortcut2.Save()
 
-# Windows Auto-Start on Login
+# Windows Startup Folder (All Users)
+$commonStartupPath = [Environment]::GetFolderPath("CommonStartup")
+if (Test-Path $commonStartupPath) {
+    $shortcut3 = $WshShell.CreateShortcut("$commonStartupPath\TimePay.lnk")
+    $shortcut3.TargetPath = "$installDir\App\TimePay.App.exe"
+    $shortcut3.WorkingDirectory = "$installDir\App"
+    $shortcut3.Description = "TimePay Windows PC Time Management"
+    $shortcut3.Save()
+}
+
+# Windows Auto-Start on Login (All Users + Current User)
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "TimePay" -Value "`"$installDir\App\TimePay.App.exe`"" -Force | Out-Null
 Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "TimePay" -Value "`"$installDir\App\TimePay.App.exe`"" -Force -ErrorAction SilentlyContinue | Out-Null
+
 
 Write-Host ""
 Write-Host "==========================================================" -ForegroundColor Green

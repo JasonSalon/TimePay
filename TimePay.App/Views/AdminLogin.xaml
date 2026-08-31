@@ -8,16 +8,23 @@
                 VerticalAlignment="Center" HorizontalAlignment="Center"
                 MinWidth="400" MaxWidth="460">
             <StackPanel>
-                <!-- Header -->
+                <!-- Logo & Header -->
+                <Border Width="56" Height="56" CornerRadius="12" Margin="0,0,0,12" HorizontalAlignment="Center"
+                        BorderBrush="{StaticResource AdminBrush}" BorderThickness="1.5">
+                    <Border.Clip>
+                        <RectangleGeometry Rect="0,0,56,56" RadiusX="12" RadiusY="12"/>
+                    </Border.Clip>
+                    <Image Source="/Assets/app.png" Stretch="UniformToFill"/>
+                </Border>
                 <TextBlock Text="TIMEPAY" 
                            Style="{StaticResource PageTitle}"
-                           HorizontalAlignment="Center" Margin="0,0,0,4"/>
+                           HorizontalAlignment="Center" Margin="0,0,0,2"/>
                 <TextBlock Text="ADMIN LOGIN"
                            FontFamily="{StaticResource PrimaryFont}"
-                           FontSize="14" FontWeight="Medium"
+                           FontSize="13" FontWeight="Bold"
                            Foreground="{StaticResource AdminBrush}"
                            HorizontalAlignment="Center"
-                           Margin="0,0,0,28"/>
+                           Margin="0,0,0,24"/>
 
                 <!-- Username -->
                 <TextBlock Text="Username" Style="{StaticResource FieldLabel}"/>

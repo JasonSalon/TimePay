@@ -12,11 +12,20 @@
 
         <!-- Header -->
         <DockPanel Grid.Row="0" Margin="0,0,0,28">
-            <StackPanel DockPanel.Dock="Left">
-                <TextBlock Text="TIMEPAY ADMIN" Style="{StaticResource PageTitle}"/>
-                <TextBlock x:Name="WelcomeText" 
-                           Style="{StaticResource PageSubtitle}"
-                           Margin="0,4,0,0"/>
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" VerticalAlignment="Center">
+                <Border Width="40" Height="40" CornerRadius="10" Margin="0,0,14,0" VerticalAlignment="Center"
+                        BorderBrush="{StaticResource AdminBrush}" BorderThickness="1.5">
+                    <Border.Clip>
+                        <RectangleGeometry Rect="0,0,40,40" RadiusX="10" RadiusY="10"/>
+                    </Border.Clip>
+                    <Image Source="/Assets/app.png" Stretch="UniformToFill"/>
+                </Border>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="TIMEPAY ADMIN" Style="{StaticResource PageTitle}" FontSize="24"/>
+                    <TextBlock x:Name="WelcomeText" 
+                               Style="{StaticResource PageSubtitle}"
+                               Margin="0,2,0,0"/>
+                </StackPanel>
             </StackPanel>
             <Button x:Name="LogoutBtn" Content="LOG OUT"
                     Style="{StaticResource SecondaryButton}"
@@ -81,6 +90,9 @@
                     <Button Content="🔒  LOCK COMPUTER" Style="{StaticResource DangerButton}"
                             Margin="6" MinWidth="180"
                             Click="LockBtn_Click"/>
+                    <Button Content="🔄  RESET TIME" Style="{StaticResource DangerButton}"
+                            Margin="6" MinWidth="180"
+                            Click="ResetBtn_Click"/>
                     <Button Content="📋  TRANSACTIONS" Style="{StaticResource SecondaryButton}"
                             Margin="6" MinWidth="180"
                             Click="TransactionsBtn_Click"/>

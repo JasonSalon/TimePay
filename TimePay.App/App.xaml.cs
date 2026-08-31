@@ -25,6 +25,12 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
+        DispatcherUnhandledException += (s, args) =>
+        {
+            MessageBox.Show($"An unexpected error occurred: {args.Exception.Message}\n\n{args.Exception.StackTrace}", "TimePay Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            args.Handled = true;
+        };
+
         var dbPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
             "TimePay", "timepay.db");

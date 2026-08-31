@@ -8,7 +8,8 @@
         Title="TimePay" 
         Height="600" Width="900"
         WindowStartupLocation="CenterScreen"
-        Background="#1a1a2e">
+        Background="#1a1a2e"
+        Icon="Assets/app.ico">
     <Grid>
         <!-- Navigation shell: content is swapped here -->
         <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" />

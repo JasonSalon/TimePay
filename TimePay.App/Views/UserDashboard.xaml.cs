@@ -150,10 +150,10 @@ public partial class UserDashboard : Page
             WarningBanner.Visibility = Visibility.Collapsed;
         }
 
-        // Trigger optional sound when warning threshold is hit
+        // Trigger distinct warning sounds when warning threshold is hit
         if (tickResult.TriggeredWarningMinutes.HasValue && (_settings?.SoundEnabled ?? true))
         {
-            SystemSounds.Exclamation.Play();
+            AudioAlertService.PlayWarningSound(tickResult.TriggeredWarningMinutes.Value);
         }
 
         // Ensure subtle HUD overlay is active and updated

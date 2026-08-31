@@ -1,10 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "kM5EhJEd3NA=",
+  "dgSpecHash": "wUaWs1U2wd8=",
   "success": true,
   "projectFilePath": "C:\\TimePay\\TimePay\\TimePay.Core\\TimePay.Core.csproj",
-  "expectedPackageFiles": [
-    "C:\\Users\\Ricky\\.nuget\\packages\\microsoft.net.illink.tasks\\8.0.30\\microsoft.net.illink.tasks.8.0.30.nupkg.sha512"
-  ],
+  "expectedPackageFiles": [],
   "logs": []
 }

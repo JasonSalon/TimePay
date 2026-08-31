@@ -28,13 +28,14 @@ if (-not (Test-Path "$sourceDir\publish\App\TimePay.App.exe")) {
     $sourceDir = $PSScriptRoot
 }
 
-# 1. Stop existing service if running
-Write-Host "[1/6] Checking for existing TimePayService..." -ForegroundColor Yellow
+# 1. Stop existing app and service if running
+Write-Host "[1/6] Closing running TimePay processes..." -ForegroundColor Yellow
+Stop-Process -Name "TimePay.App" -Force -ErrorAction SilentlyContinue
 if (Get-Service -Name "TimePayService" -ErrorAction SilentlyContinue) {
     Write-Host "      Stopping existing TimePayService..." -ForegroundColor Gray
     Stop-Service -Name "TimePayService" -Force -ErrorAction SilentlyContinue
-    Start-Sleep -Seconds 2
 }
+Start-Sleep -Seconds 2
 
 # 2. Create Target Directories
 Write-Host "[2/6] Creating installation directories..." -ForegroundColor Yellow

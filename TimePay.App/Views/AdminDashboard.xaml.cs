@@ -213,6 +213,46 @@ public partial class AdminDashboard : Page
         }
     }
 
+    private async void ResetBtn_Click(object sender, RoutedEventArgs e)
+    {
+        RecordActivity();
+
+        try
+        {
+            using var scope = App.Services.CreateScope();
+            var timerEngine = App.Services.GetRequiredService<ITimerEngine>();
+            var auditLogger = scope.ServiceProvider.GetRequiredService<IAuditLogger>();
+            var timeCalc = App.Services.GetRequiredService<ITimeCalculator>();
+            var adminSession = App.Services.GetRequiredService<AdminSessionService>();
+
+            var remaining = timerEngine.GetRemainingTime();
+
+            var result = MessageBox.Show(
+                $"Are you sure you want to RESET the timer and END the active session?\n\nRemaining time: {timeCalc.FormatTimeSpan(remaining)}\n\nThis will clear all remaining balance to 00:00:00.\nThis action cannot be undone.",
+                "Confirm Reset Time",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                await timerEngine.ResetSessionAsync();
+
+                await auditLogger.LogAsync(
+                    AuditAction.SessionExpired,
+                    adminSession.CurrentAdminUsername ?? "admin",
+                    $"Session reset and cleared by administrator (was: {timeCalc.FormatTimeSpan(remaining)})");
+
+                await RefreshDisplay();
+
+                MessageBox.Show("Computer time has been reset to 00:00:00.", "Time Reset", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Failed to reset time: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
     private void TransactionsBtn_Click(object sender, RoutedEventArgs e)
     {
         RecordActivity();

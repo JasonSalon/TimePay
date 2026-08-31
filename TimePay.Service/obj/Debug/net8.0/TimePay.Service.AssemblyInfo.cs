@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TimePay.Service")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f5aded9cebf040e587821b6cfd5f2d0567a13182")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a20b01097c953313344851f7f0e15509ef7381c4")]
 [assembly: System.Reflection.AssemblyProductAttribute("TimePay.Service")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TimePay.Service")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

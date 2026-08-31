@@ -34,6 +34,7 @@ public partial class Transactions : Page
 {
     private List<TransactionDisplayItem> _allTransactions = new();
     private Currency _currency = Currency.PHP;
+    private bool _isInitialized = false;
 
     public Transactions()
     {
@@ -43,6 +44,7 @@ public partial class Transactions : Page
 
     private async void Transactions_Loaded(object sender, RoutedEventArgs e)
     {
+        _isInitialized = true;
         await LoadTransactionsAsync();
     }
 
@@ -86,6 +88,9 @@ public partial class Transactions : Page
 
     private void ApplyFilters()
     {
+        if (!_isInitialized || TransactionsGrid == null || TotalRevenueText == null || TotalTimeSoldText == null || TotalTransactionsCountText == null)
+            return;
+
         var filtered = _allTransactions.AsEnumerable();
 
         // 1. Date Filter

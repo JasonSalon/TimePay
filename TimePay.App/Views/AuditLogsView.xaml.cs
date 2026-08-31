@@ -27,6 +27,7 @@ public class AuditLogDisplayItem
 public partial class AuditLogsView : Page
 {
     private List<AuditLogDisplayItem> _allLogs = new();
+    private bool _isInitialized = false;
 
     public AuditLogsView()
     {
@@ -36,6 +37,7 @@ public partial class AuditLogsView : Page
 
     private async void AuditLogsView_Loaded(object sender, RoutedEventArgs e)
     {
+        _isInitialized = true;
         await LoadLogsAsync();
     }
 
@@ -71,6 +73,9 @@ public partial class AuditLogsView : Page
 
     private void ApplyFilters()
     {
+        if (!_isInitialized || AuditGrid == null)
+            return;
+
         var filtered = _allLogs.AsEnumerable();
 
         // 1. Category Filter

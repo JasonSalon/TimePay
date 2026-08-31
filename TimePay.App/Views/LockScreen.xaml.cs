@@ -58,6 +58,11 @@ public partial class LockScreen : Page
             {
                 LockTitleText.Text = "COMPUTER TIME EXPIRED";
                 LockMessageText.Text = "Your purchased computer time has ended. Please contact the administrator or counter to add more time.";
+
+                if (settings.SoundEnabled)
+                {
+                    AudioAlertService.PlayExpiredSound();
+                }
             }
         }
         catch

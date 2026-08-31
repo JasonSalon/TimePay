@@ -1,50 +1,46 @@
 <Window x:Class="TimePay.App.Views.TimerWidgetWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="TimePay Widget" 
-        Height="54" Width="260"
+        Title="TimePay HUD" 
+        Height="36" Width="136"
         WindowStyle="None" 
         AllowsTransparency="True" 
         Background="Transparent"
         Topmost="True" 
         ShowInTaskbar="False"
         WindowStartupLocation="Manual"
-        MouseDown="Window_MouseDown">
-    <Border Background="#e61a1a2e" 
-            BorderBrush="#4fc3f7" 
-            BorderThickness="1.5" 
-            CornerRadius="16" 
-            Padding="12,6"
-            Cursor="SizeAll">
-        <DockPanel VerticalAlignment="Center">
-            <!-- Expand Button -->
-            <Button x:Name="ExpandBtn" 
-                    Content="↗" 
-                    DockPanel.Dock="Right"
-                    Background="Transparent" 
-                    Foreground="#4fc3f7" 
-                    FontSize="14" FontWeight="Bold" 
-                    BorderThickness="0" 
-                    Cursor="Hand"
-                    Padding="6,0"
-                    ToolTip="Expand Dashboard"
-                    Click="ExpandBtn_Click"/>
-
-            <!-- Status Dot -->
+        IsHitTestVisible="False"
+        Focusable="False"
+        Opacity="0.65">
+    <!-- Subtle frosted dark HUD pill -->
+    <Border Background="#660a0f1d" 
+            BorderBrush="#334fc3f7" 
+            BorderThickness="1" 
+            CornerRadius="10" 
+            Padding="10,4"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
+        <DockPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <!-- Subtle Status Dot -->
             <Ellipse x:Name="StatusDot" 
                      DockPanel.Dock="Left" 
-                     Width="10" Height="10" 
+                     Width="7" Height="7" 
                      Fill="#00d97e" 
-                     Margin="0,0,10,0" 
+                     Margin="0,0,8,0" 
                      VerticalAlignment="Center"/>
 
-            <!-- Remaining Time Display -->
+            <!-- Remaining Time Display (Clean monospaced text) -->
             <TextBlock x:Name="WidgetTimeText" 
                        Text="00:00:00" 
-                       FontFamily="Consolas" 
-                       FontSize="18" FontWeight="Bold" 
+                       FontFamily="Consolas, monospace" 
+                       FontSize="15" 
+                       FontWeight="Bold" 
                        Foreground="#ffffff" 
-                       VerticalAlignment="Center"/>
+                       VerticalAlignment="Center">
+                <TextBlock.Effect>
+                    <DropShadowEffect BlurRadius="4" ShadowDepth="1" Opacity="0.8" Color="#000000"/>
+                </TextBlock.Effect>
+            </TextBlock>
         </DockPanel>
     </Border>
 </Window>

@@ -1,0 +1,5 @@
+C:\TimePay\TimePay\publish\App\TimePay.App.pdb
+C:\TimePay\TimePay\publish\App\e_sqlite3.dll
+C:\TimePay\TimePay\publish\App\TimePay.Core.pdb
+C:\TimePay\TimePay\publish\App\TimePay.Data.pdb
+C:\TimePay\TimePay\publish\App\TimePay.App.exe

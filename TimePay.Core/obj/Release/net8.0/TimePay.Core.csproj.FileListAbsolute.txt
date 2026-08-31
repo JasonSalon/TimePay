@@ -1,0 +1,12 @@
+C:\TimePay\TimePay\TimePay.Core\bin\Release\net8.0\TimePay.Core.deps.json
+C:\TimePay\TimePay\TimePay.Core\bin\Release\net8.0\TimePay.Core.dll
+C:\TimePay\TimePay\TimePay.Core\bin\Release\net8.0\TimePay.Core.pdb
+C:\TimePay\TimePay\TimePay.Core\obj\Release\net8.0\TimePay.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\TimePay\TimePay\TimePay.Core\obj\Release\net8.0\TimePay.Core.AssemblyInfoInputs.cache
+C:\TimePay\TimePay\TimePay.Core\obj\Release\net8.0\TimePay.Core.AssemblyInfo.cs
+C:\TimePay\TimePay\TimePay.Core\obj\Release\net8.0\TimePay.Core.csproj.CoreCompileInputs.cache
+C:\TimePay\TimePay\TimePay.Core\obj\Release\net8.0\TimePay.Core.sourcelink.json
+C:\TimePay\TimePay\TimePay.Core\obj\Release\net8.0\TimePay.Core.dll
+C:\TimePay\TimePay\TimePay.Core\obj\Release\net8.0\refint\TimePay.Core.dll
+C:\TimePay\TimePay\TimePay.Core\obj\Release\net8.0\TimePay.Core.pdb
+C:\TimePay\TimePay\TimePay.Core\obj\Release\net8.0\ref\TimePay.Core.dll

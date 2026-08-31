@@ -95,37 +95,57 @@ public partial class App : Application
         mainWindow.Show();
 
         // Determine initial page based on session & roles (spec Section 9 & 61)
-        await NavigateToInitialPage(nav);
+        await NavigateToInitialPage(nav, mainWindow);
     }
 
-    private async Task NavigateToInitialPage(NavigationService nav)
+    private async Task NavigateToInitialPage(NavigationService nav, MainWindow mainWindow)
     {
         using var scope = Services.CreateScope();
         var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
         var sessionManager = scope.ServiceProvider.GetRequiredService<ISessionManager>();
+        var startupService = Services.GetRequiredService<IStartupService>();
 
         if (!await authService.AnyAdminExistsAsync())
         {
             // First launch — show setup wizard
+            mainWindow.WindowState = WindowState.Normal;
+            mainWindow.Topmost = false;
             var wizard = Services.GetRequiredService<SetupWizard>();
             nav.NavigateTo(wizard);
         }
         else
         {
+            bool isWindowsAdmin = startupService.IsRunningAsWindowsAdmin();
             var session = await sessionManager.GetCurrentSessionAsync();
             var remaining = await sessionManager.GetRemainingTimeAsync();
 
-            if (session != null && session.Status == SessionStatus.Active && remaining > TimeSpan.Zero)
+            if (isWindowsAdmin)
             {
-                // Active purchased time available -> User Dashboard
-                var userDashboard = Services.GetRequiredService<UserDashboard>();
-                nav.NavigateTo(userDashboard);
+                // When logged in as Windows Administrator, open directly to Admin Login (normal windowed mode, no lock screen trap)
+                mainWindow.WindowState = WindowState.Normal;
+                mainWindow.Topmost = false;
+                var adminLogin = Services.GetRequiredService<AdminLogin>();
+                nav.NavigateTo(adminLogin);
             }
             else
             {
-                // No time or expired -> Lock Screen
-                var lockScreen = Services.GetRequiredService<LockScreen>();
-                nav.NavigateTo(lockScreen);
+                // Standard Guest User
+                if (session != null && session.Status == SessionStatus.Active && remaining > TimeSpan.Zero)
+                {
+                    // Active purchased time available -> User Dashboard with top-right HUD
+                    mainWindow.WindowState = WindowState.Normal;
+                    mainWindow.Topmost = false;
+                    var userDashboard = Services.GetRequiredService<UserDashboard>();
+                    nav.NavigateTo(userDashboard);
+                }
+                else
+                {
+                    // No time or expired -> Enforce Fullscreen Lock Screen
+                    mainWindow.WindowState = WindowState.Maximized;
+                    mainWindow.Topmost = true;
+                    var lockScreen = Services.GetRequiredService<LockScreen>();
+                    nav.NavigateTo(lockScreen);
+                }
             }
         }
 

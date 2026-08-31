@@ -22,9 +22,10 @@
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
-                <Button x:Name="MiniWidgetBtn" Content="◰ MINI WIDGET"
+                <Button x:Name="MiniWidgetBtn" Content="◰ MINIMIZE TO HUD"
                         Style="{StaticResource SecondaryButton}"
                         Padding="14,8" Margin="0,0,12,0"
+                        ToolTip="Minimize to subtle top-right HUD. Click TimePay on taskbar to restore."
                         Click="MiniWidgetBtn_Click"/>
 
                 <Button x:Name="AdminLoginBtn" Content="🔑 ADMIN LOGIN"

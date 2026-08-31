@@ -156,26 +156,24 @@ public partial class UserDashboard : Page
             SystemSounds.Exclamation.Play();
         }
 
-        // Update floating widget if open
-        _miniWidgetWindow?.UpdateDisplay(TimerDisplay.Text, isLowTime, isPaused);
+        // Ensure subtle HUD overlay is active and updated
+        if (_miniWidgetWindow == null)
+        {
+            _miniWidgetWindow = new TimerWidgetWindow();
+            _miniWidgetWindow.Show();
+        }
+
+        _miniWidgetWindow.UpdateDisplay(TimerDisplay.Text, isLowTime, isPaused);
     }
 
     private void MiniWidgetBtn_Click(object sender, RoutedEventArgs e)
     {
         var mainWindow = Window.GetWindow(this);
-        if (mainWindow == null) return;
-
-        mainWindow.Hide();
-
-        _miniWidgetWindow = new TimerWidgetWindow(() =>
+        if (mainWindow != null)
         {
-            mainWindow.Show();
-            mainWindow.WindowState = WindowState.Normal;
-            mainWindow.Activate();
-        });
-
-        _miniWidgetWindow.UpdateDisplay(TimerDisplay.Text, false, false);
-        _miniWidgetWindow.Show();
+            // Minimize to taskbar — subtle top-right HUD remains visible on screen
+            mainWindow.WindowState = WindowState.Minimized;
+        }
     }
 
     private void CloseMiniWidget()

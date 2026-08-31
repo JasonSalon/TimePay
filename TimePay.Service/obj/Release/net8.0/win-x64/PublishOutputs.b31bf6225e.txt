@@ -1,0 +1,7 @@
+C:\TimePay\TimePay\publish\Service\appsettings.Development.json
+C:\TimePay\TimePay\publish\Service\appsettings.json
+C:\TimePay\TimePay\publish\Service\TimePay.Service.pdb
+C:\TimePay\TimePay\publish\Service\e_sqlite3.dll
+C:\TimePay\TimePay\publish\Service\TimePay.Core.pdb
+C:\TimePay\TimePay\publish\Service\TimePay.Data.pdb
+C:\TimePay\TimePay\publish\Service\TimePay.Service.exe

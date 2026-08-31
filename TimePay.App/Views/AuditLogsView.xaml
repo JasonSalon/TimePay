@@ -1,0 +1,108 @@
+<Page x:Class="TimePay.App.Views.AuditLogsView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="System Audit Logs"
+      Background="{StaticResource PrimaryBgBrush}">
+    <Grid Margin="32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <DockPanel Grid.Row="0" Margin="0,0,0,20">
+            <Button x:Name="BackBtn" Content="← BACK"
+                    Style="{StaticResource SecondaryButton}"
+                    DockPanel.Dock="Left"
+                    Padding="16,8"
+                    Click="BackBtn_Click"/>
+
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                <Button x:Name="ExportCsvBtn" Content="📥 EXPORT CSV"
+                        Style="{StaticResource SecondaryButton}"
+                        Padding="14,8" Margin="0,0,10,0"
+                        Click="ExportCsvBtn_Click"/>
+                <Button x:Name="RefreshBtn" Content="🔄 REFRESH"
+                        Style="{StaticResource PrimaryButton}"
+                        Padding="14,8"
+                        Click="RefreshBtn_Click"/>
+            </StackPanel>
+
+            <StackPanel Margin="16,0,0,0">
+                <TextBlock Text="SYSTEM AUDIT LOGS" Style="{StaticResource PageTitle}" FontSize="22"/>
+                <TextBlock Text="Security events, logins, time changes, rate adjustments, and clock tamper records" Style="{StaticResource PageSubtitle}"/>
+            </StackPanel>
+        </DockPanel>
+
+        <!-- Filters Bar -->
+        <Border Grid.Row="1" Background="{StaticResource CardBgBrush}" CornerRadius="10" Padding="16,12" Margin="0,0,0,16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="220"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Search box -->
+                <TextBox x:Name="SearchBox" 
+                         Style="{StaticResource DarkTextBox}" 
+                         Padding="12,8"
+                         FontSize="13"
+                         TextChanged="SearchBox_TextChanged"/>
+
+                <!-- Category Filter -->
+                <ComboBox x:Name="ActionFilterCombo" 
+                          Grid.Column="2" 
+                          FontSize="13" Padding="12,8"
+                          FontFamily="{StaticResource PrimaryFont}"
+                          SelectionChanged="ActionFilterCombo_SelectionChanged">
+                    <ComboBoxItem Content="All Events" IsSelected="True"/>
+                    <ComboBoxItem Content="Security &amp; Logins"/>
+                    <ComboBoxItem Content="Rate &amp; Settings"/>
+                    <ComboBoxItem Content="Time &amp; Sessions"/>
+                    <ComboBoxItem Content="System &amp; Service"/>
+                    <ComboBoxItem Content="Clock Tampering (Alerts)"/>
+                </ComboBox>
+            </Grid>
+        </Border>
+
+        <!-- Audit Logs DataGrid -->
+        <Border Grid.Row="2" Background="{StaticResource CardBgBrush}" CornerRadius="10" Padding="0">
+            <DataGrid x:Name="AuditGrid" 
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      GridLinesVisibility="Horizontal"
+                      HorizontalGridLinesBrush="#232d4b"
+                      Background="Transparent"
+                      RowBackground="#181f38"
+                      AlternatingRowBackground="#13192e"
+                      BorderThickness="0"
+                      HeadersVisibility="Column"
+                      Foreground="{StaticResource PrimaryTextBrush}"
+                      FontSize="13"
+                      FontFamily="{StaticResource PrimaryFont}"
+                      RowHeight="38">
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="#0f1526"/>
+                        <Setter Property="Foreground" Value="{StaticResource SecondaryTextBrush}"/>
+                        <Setter Property="FontWeight" Value="SemiBold"/>
+                        <Setter Property="FontSize" Value="12"/>
+                        <Setter Property="Padding" Value="14,10"/>
+                        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                        <Setter Property="BorderBrush" Value="#2a3555"/>
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="DATE &amp; TIME" Binding="{Binding FormattedDate}" Width="160"/>
+                    <DataGridTextColumn Header="ACTION" Binding="{Binding ActionName}" Width="170" FontWeight="Bold" FontFamily="Consolas"/>
+                    <DataGridTextColumn Header="USER" Binding="{Binding Username}" Width="110"/>
+                    <DataGridTextColumn Header="DETAILS" Binding="{Binding Details}" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </Grid>
+</Page>

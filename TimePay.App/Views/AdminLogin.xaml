@@ -1,0 +1,60 @@
+<Page x:Class="TimePay.App.Views.AdminLogin"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Admin Login"
+      Background="{StaticResource PrimaryBgBrush}">
+    <Grid>
+        <Border Style="{StaticResource CardPanel}" 
+                VerticalAlignment="Center" HorizontalAlignment="Center"
+                MinWidth="400" MaxWidth="460">
+            <StackPanel>
+                <!-- Header -->
+                <TextBlock Text="TIMEPAY" 
+                           Style="{StaticResource PageTitle}"
+                           HorizontalAlignment="Center" Margin="0,0,0,4"/>
+                <TextBlock Text="ADMIN LOGIN"
+                           FontFamily="{StaticResource PrimaryFont}"
+                           FontSize="14" FontWeight="Medium"
+                           Foreground="{StaticResource AdminBrush}"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,28"/>
+
+                <!-- Username -->
+                <TextBlock Text="Username" Style="{StaticResource FieldLabel}"/>
+                <TextBox x:Name="UsernameBox" 
+                         Style="{StaticResource DarkTextBox}"
+                         Margin="0,0,0,18"
+                         KeyDown="InputBox_KeyDown"/>
+
+                <!-- Password -->
+                <TextBlock Text="Password" Style="{StaticResource FieldLabel}"/>
+                <PasswordBox x:Name="PasswordBox" 
+                             Style="{StaticResource DarkPasswordBox}"
+                             Margin="0,0,0,18"
+                             KeyDown="InputBox_KeyDown"/>
+
+                <!-- Error Message -->
+                <TextBlock x:Name="ErrorText" 
+                           Style="{StaticResource ErrorText}"
+                           Visibility="Collapsed"
+                           Margin="0,0,0,12"/>
+
+                <!-- Login Button -->
+                <Button x:Name="LoginBtn"
+                        Content="LOGIN"
+                        Style="{StaticResource PrimaryButton}"
+                        HorizontalAlignment="Stretch"
+                        Click="LoginBtn_Click"
+                        Margin="0,8,0,0"/>
+
+                <!-- Failed Attempts Counter -->
+                <TextBlock x:Name="AttemptsText"
+                           Foreground="{StaticResource MutedTextBrush}"
+                           FontSize="12"
+                           HorizontalAlignment="Center"
+                           Visibility="Collapsed"
+                           Margin="0,12,0,0"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Page>

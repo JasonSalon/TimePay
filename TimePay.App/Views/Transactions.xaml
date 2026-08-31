@@ -1,0 +1,151 @@
+<Page x:Class="TimePay.App.Views.Transactions"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Transaction History"
+      Background="{StaticResource PrimaryBgBrush}">
+    <Grid Margin="32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <DockPanel Grid.Row="0" Margin="0,0,0,20">
+            <Button x:Name="BackBtn" Content="← BACK"
+                    Style="{StaticResource SecondaryButton}"
+                    DockPanel.Dock="Left"
+                    Padding="16,8"
+                    Click="BackBtn_Click"/>
+
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                <Button x:Name="ExportCsvBtn" Content="📥 EXPORT CSV"
+                        Style="{StaticResource SecondaryButton}"
+                        Padding="14,8" Margin="0,0,10,0"
+                        Click="ExportCsvBtn_Click"/>
+                <Button x:Name="RefreshBtn" Content="🔄 REFRESH"
+                        Style="{StaticResource PrimaryButton}"
+                        Padding="14,8"
+                        Click="RefreshBtn_Click"/>
+            </StackPanel>
+
+            <StackPanel Margin="16,0,0,0">
+                <TextBlock Text="TRANSACTION HISTORY" Style="{StaticResource PageTitle}" FontSize="22"/>
+                <TextBlock Text="Audit trail of all computer time purchases and revenue" Style="{StaticResource PageSubtitle}"/>
+            </StackPanel>
+        </DockPanel>
+
+        <!-- KPI Summary Cards -->
+        <Grid Grid.Row="1" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Card 1: Total Revenue -->
+            <Border Grid.Column="0" Background="{StaticResource CardBgBrush}" CornerRadius="10" Padding="18">
+                <StackPanel>
+                    <TextBlock Text="TOTAL REVENUE" FontSize="11" FontWeight="Bold" Foreground="{StaticResource SecondaryTextBrush}"/>
+                    <TextBlock x:Name="TotalRevenueText" Text="₱0.00" 
+                               FontFamily="{StaticResource MonoFont}" FontSize="24" FontWeight="Bold" 
+                               Foreground="{StaticResource ActiveBrush}" Margin="0,6,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Card 2: Total Time Added -->
+            <Border Grid.Column="2" Background="{StaticResource CardBgBrush}" CornerRadius="10" Padding="18">
+                <StackPanel>
+                    <TextBlock Text="TOTAL USAGE TIME SOLD" FontSize="11" FontWeight="Bold" Foreground="{StaticResource SecondaryTextBrush}"/>
+                    <TextBlock x:Name="TotalTimeSoldText" Text="0 hours" 
+                               FontFamily="{StaticResource PrimaryFont}" FontSize="20" FontWeight="Bold" 
+                               Foreground="{StaticResource AccentBrush}" Margin="0,8,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Card 3: Total Transactions -->
+            <Border Grid.Column="4" Background="{StaticResource CardBgBrush}" CornerRadius="10" Padding="18">
+                <StackPanel>
+                    <TextBlock Text="TOTAL TRANSACTIONS" FontSize="11" FontWeight="Bold" Foreground="{StaticResource SecondaryTextBrush}"/>
+                    <TextBlock x:Name="TotalTransactionsCountText" Text="0" 
+                               FontFamily="{StaticResource MonoFont}" FontSize="24" FontWeight="Bold" 
+                               Foreground="{StaticResource PrimaryTextBrush}" Margin="0,6,0,0"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- Search and Date Filter Bar -->
+        <Border Grid.Row="2" Background="{StaticResource CardBgBrush}" CornerRadius="10" Padding="16,12" Margin="0,0,0,16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="200"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Search box -->
+                <TextBox x:Name="SearchBox" 
+                         Style="{StaticResource DarkTextBox}" 
+                         Padding="12,8"
+                         FontSize="13"
+                         TextChanged="SearchBox_TextChanged"/>
+
+                <!-- Date Range Filter -->
+                <ComboBox x:Name="DateFilterCombo" 
+                          Grid.Column="2" 
+                          FontSize="13" Padding="12,8"
+                          FontFamily="{StaticResource PrimaryFont}"
+                          SelectionChanged="DateFilterCombo_SelectionChanged">
+                    <ComboBoxItem Content="All Time" IsSelected="True"/>
+                    <ComboBoxItem Content="Today"/>
+                    <ComboBoxItem Content="Last 7 Days"/>
+                    <ComboBoxItem Content="This Month"/>
+                </ComboBox>
+            </Grid>
+        </Border>
+
+        <!-- Transactions DataGrid -->
+        <Border Grid.Row="3" Background="{StaticResource CardBgBrush}" CornerRadius="10" Padding="0">
+            <DataGrid x:Name="TransactionsGrid" 
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      GridLinesVisibility="Horizontal"
+                      HorizontalGridLinesBrush="#232d4b"
+                      Background="Transparent"
+                      RowBackground="#181f38"
+                      AlternatingRowBackground="#13192e"
+                      BorderThickness="0"
+                      HeadersVisibility="Column"
+                      Foreground="{StaticResource PrimaryTextBrush}"
+                      FontSize="13"
+                      FontFamily="{StaticResource PrimaryFont}"
+                      RowHeight="36">
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="#0f1526"/>
+                        <Setter Property="Foreground" Value="{StaticResource SecondaryTextBrush}"/>
+                        <Setter Property="FontWeight" Value="SemiBold"/>
+                        <Setter Property="FontSize" Value="12"/>
+                        <Setter Property="Padding" Value="14,10"/>
+                        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                        <Setter Property="BorderBrush" Value="#2a3555"/>
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="TRANSACTION ID" Binding="{Binding TransactionId}" Width="150" FontFamily="Consolas"/>
+                    <DataGridTextColumn Header="DATE &amp; TIME" Binding="{Binding FormattedDate}" Width="160"/>
+                    <DataGridTextColumn Header="AMOUNT" Binding="{Binding FormattedAmount}" Width="100" FontWeight="Bold" FontFamily="Consolas"/>
+                    <DataGridTextColumn Header="RATE USED" Binding="{Binding FormattedRate}" Width="110"/>
+                    <DataGridTextColumn Header="TIME ADDED" Binding="{Binding FormattedTimeAdded}" Width="140" Foreground="#00d97e" FontWeight="SemiBold"/>
+                    <DataGridTextColumn Header="NEW EXPIRATION" Binding="{Binding FormattedNewExpiration}" Width="160"/>
+                    <DataGridTextColumn Header="ADMIN" Binding="{Binding AdminUsername}" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </Grid>
+</Page>

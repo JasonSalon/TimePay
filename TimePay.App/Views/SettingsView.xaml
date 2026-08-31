@@ -1,0 +1,133 @@
+<Page x:Class="TimePay.App.Views.SettingsView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="TimePay Settings"
+      Background="{StaticResource PrimaryBgBrush}">
+    <Grid Margin="32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <DockPanel Grid.Row="0" Margin="0,0,0,24">
+            <Button x:Name="BackBtn" Content="← BACK"
+                    Style="{StaticResource SecondaryButton}"
+                    DockPanel.Dock="Left"
+                    Padding="16,8"
+                    Click="BackBtn_Click"/>
+            <StackPanel Margin="16,0,0,0">
+                <TextBlock Text="SYSTEM SETTINGS" Style="{StaticResource PageTitle}" FontSize="22"/>
+                <TextBlock Text="Manage warning thresholds, sounds, startup, and security" Style="{StaticResource PageSubtitle}"/>
+            </StackPanel>
+        </DockPanel>
+
+        <!-- Content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <Grid HorizontalAlignment="Center" MaxWidth="720">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="340"/>
+                    <ColumnDefinition Width="24"/>
+                    <ColumnDefinition Width="340"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Left Column: General & Behavior -->
+                <StackPanel Grid.Column="0">
+                    <!-- Warning Thresholds Card -->
+                    <Border Style="{StaticResource CardPanel}" Margin="0,0,0,20">
+                        <StackPanel>
+                            <TextBlock Text="⚠️ LOW-TIME WARNINGS" 
+                                       FontFamily="{StaticResource PrimaryFont}" FontSize="14" FontWeight="Bold" 
+                                       Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,16"/>
+
+                            <CheckBox x:Name="SoundEnabledCheck" 
+                                      Content="Enable Warning Sounds (Audible cues)"
+                                      FontSize="13" Foreground="{StaticResource PrimaryTextBrush}"
+                                      Margin="0,0,0,16"/>
+
+                            <!-- Warning 1 -->
+                            <TextBlock Text="First Warning Threshold (Minutes)" Style="{StaticResource FieldLabel}"/>
+                            <TextBox x:Name="Warn1Box" Style="{StaticResource DarkTextBox}" Text="10" Margin="0,0,0,12"/>
+
+                            <!-- Warning 2 -->
+                            <TextBlock Text="Second Warning Threshold (Minutes)" Style="{StaticResource FieldLabel}"/>
+                            <TextBox x:Name="Warn2Box" Style="{StaticResource DarkTextBox}" Text="5" Margin="0,0,0,12"/>
+
+                            <!-- Warning 3 -->
+                            <TextBlock Text="Final Urgent Threshold (Minutes)" Style="{StaticResource FieldLabel}"/>
+                            <TextBox x:Name="Warn3Box" Style="{StaticResource DarkTextBox}" Text="1" Margin="0,0,0,8"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- System & Startup Card -->
+                    <Border Style="{StaticResource CardPanel}">
+                        <StackPanel>
+                            <TextBlock Text="⚙️ STARTUP &amp; OPERATION" 
+                                       FontFamily="{StaticResource PrimaryFont}" FontSize="14" FontWeight="Bold" 
+                                       Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,16"/>
+
+                            <CheckBox x:Name="AutoStartCheck" 
+                                      Content="Launch TimePay on Windows Startup"
+                                      FontSize="13" Foreground="{StaticResource PrimaryTextBrush}"
+                                      Margin="0,0,0,12"/>
+
+                            <CheckBox x:Name="AllowDecimalCheck" 
+                                      Content="Allow Decimal Payment Amounts (e.g. ₱2.50)"
+                                      FontSize="13" Foreground="{StaticResource PrimaryTextBrush}"
+                                      Margin="0,0,0,12"/>
+
+                            <CheckBox x:Name="PauseOnShutdownCheck" 
+                                      Content="Pause Timer on Computer Shutdown"
+                                      FontSize="13" Foreground="{StaticResource PrimaryTextBrush}"
+                                      Margin="0,0,0,8"/>
+
+                            <TextBlock Text="ℹ️ By default, time continues to expire while PC is powered off (spec Section 8)." 
+                                       FontSize="11" Foreground="{StaticResource MutedTextBrush}" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- Right Column: Admin Password & Save -->
+                <StackPanel Grid.Column="2">
+                    <!-- Change Password Card -->
+                    <Border Style="{StaticResource CardPanel}" Margin="0,0,0,20">
+                        <StackPanel>
+                            <TextBlock Text="🔒 CHANGE ADMIN PASSWORD" 
+                                       FontFamily="{StaticResource PrimaryFont}" FontSize="14" FontWeight="Bold" 
+                                       Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,16"/>
+
+                            <TextBlock Text="Current Password" Style="{StaticResource FieldLabel}"/>
+                            <PasswordBox x:Name="CurrentPasswordBox" Style="{StaticResource DarkPasswordBox}" Margin="0,0,0,12"/>
+
+                            <TextBlock Text="New Password" Style="{StaticResource FieldLabel}"/>
+                            <PasswordBox x:Name="NewPasswordBox" Style="{StaticResource DarkPasswordBox}" Margin="0,0,0,12"/>
+
+                            <TextBlock Text="Confirm New Password" Style="{StaticResource FieldLabel}"/>
+                            <PasswordBox x:Name="ConfirmNewPasswordBox" Style="{StaticResource DarkPasswordBox}" Margin="0,0,0,14"/>
+
+                            <Button x:Name="ChangePasswordBtn" Content="UPDATE PASSWORD"
+                                    Style="{StaticResource SecondaryButton}"
+                                    HorizontalAlignment="Stretch"
+                                    Click="ChangePasswordBtn_Click"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Save All Settings -->
+                    <Border Style="{StaticResource CardPanel}">
+                        <StackPanel>
+                            <TextBlock x:Name="StatusMessageText" 
+                                       Style="{StaticResource ErrorText}"
+                                       Visibility="Collapsed"
+                                       Margin="0,0,0,14"/>
+
+                            <Button x:Name="SaveSettingsBtn" Content="SAVE SETTINGS"
+                                    Style="{StaticResource PrimaryButton}"
+                                    HorizontalAlignment="Stretch"
+                                    Click="SaveSettingsBtn_Click"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</Page>

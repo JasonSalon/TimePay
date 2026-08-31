@@ -1,0 +1,50 @@
+<Window x:Class="TimePay.App.Views.TimerWidgetWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="TimePay Widget" 
+        Height="54" Width="260"
+        WindowStyle="None" 
+        AllowsTransparency="True" 
+        Background="Transparent"
+        Topmost="True" 
+        ShowInTaskbar="False"
+        WindowStartupLocation="Manual"
+        MouseDown="Window_MouseDown">
+    <Border Background="#e61a1a2e" 
+            BorderBrush="#4fc3f7" 
+            BorderThickness="1.5" 
+            CornerRadius="16" 
+            Padding="12,6"
+            Cursor="SizeAll">
+        <DockPanel VerticalAlignment="Center">
+            <!-- Expand Button -->
+            <Button x:Name="ExpandBtn" 
+                    Content="↗" 
+                    DockPanel.Dock="Right"
+                    Background="Transparent" 
+                    Foreground="#4fc3f7" 
+                    FontSize="14" FontWeight="Bold" 
+                    BorderThickness="0" 
+                    Cursor="Hand"
+                    Padding="6,0"
+                    ToolTip="Expand Dashboard"
+                    Click="ExpandBtn_Click"/>
+
+            <!-- Status Dot -->
+            <Ellipse x:Name="StatusDot" 
+                     DockPanel.Dock="Left" 
+                     Width="10" Height="10" 
+                     Fill="#00d97e" 
+                     Margin="0,0,10,0" 
+                     VerticalAlignment="Center"/>
+
+            <!-- Remaining Time Display -->
+            <TextBlock x:Name="WidgetTimeText" 
+                       Text="00:00:00" 
+                       FontFamily="Consolas" 
+                       FontSize="18" FontWeight="Bold" 
+                       Foreground="#ffffff" 
+                       VerticalAlignment="Center"/>
+        </DockPanel>
+    </Border>
+</Window>

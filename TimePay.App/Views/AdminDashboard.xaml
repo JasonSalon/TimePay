@@ -1,0 +1,103 @@
+<Page x:Class="TimePay.App.Views.AdminDashboard"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Admin Dashboard"
+      Background="{StaticResource PrimaryBgBrush}">
+    <Grid Margin="32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <DockPanel Grid.Row="0" Margin="0,0,0,28">
+            <StackPanel DockPanel.Dock="Left">
+                <TextBlock Text="TIMEPAY ADMIN" Style="{StaticResource PageTitle}"/>
+                <TextBlock x:Name="WelcomeText" 
+                           Style="{StaticResource PageSubtitle}"
+                           Margin="0,4,0,0"/>
+            </StackPanel>
+            <Button x:Name="LogoutBtn" Content="LOG OUT"
+                    Style="{StaticResource SecondaryButton}"
+                    DockPanel.Dock="Right"
+                    VerticalAlignment="Top"
+                    Click="LogoutBtn_Click"/>
+        </DockPanel>
+
+        <!-- Dashboard Content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <!-- Status Card -->
+                <Border Style="{StaticResource CardPanel}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,16">
+                            <TextBlock Text="PC STATUS" 
+                                       FontFamily="{StaticResource PrimaryFont}"
+                                       FontSize="13" FontWeight="Bold"
+                                       Foreground="{StaticResource SecondaryTextBrush}"/>
+                            <TextBlock x:Name="StatusIndicator" Text="● NO SESSION"
+                                       FontSize="13" FontWeight="Bold"
+                                       Foreground="{StaticResource MutedTextBrush}"
+                                       HorizontalAlignment="Right"/>
+                        </DockPanel>
+
+                        <TextBlock Text="TIME REMAINING"
+                                   FontFamily="{StaticResource PrimaryFont}"
+                                   FontSize="12" Foreground="{StaticResource SecondaryTextBrush}"
+                                   HorizontalAlignment="Center" Margin="0,0,0,4"/>
+
+                        <TextBlock x:Name="TimerDisplay" Text="00:00:00"
+                                   FontFamily="{StaticResource MonoFont}"
+                                   FontSize="48" FontWeight="Bold"
+                                   Foreground="{StaticResource PrimaryTextBrush}"
+                                   HorizontalAlignment="Center" Margin="0,0,0,8"/>
+
+                        <TextBlock x:Name="RateDisplay" 
+                                   FontFamily="{StaticResource PrimaryFont}"
+                                   FontSize="14" 
+                                   Foreground="{StaticResource SecondaryTextBrush}"
+                                   HorizontalAlignment="Center"/>
+
+                        <TextBlock x:Name="ExpiresDisplay"
+                                   FontFamily="{StaticResource PrimaryFont}"
+                                   FontSize="13"
+                                   Foreground="{StaticResource MutedTextBrush}"
+                                   HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Action Buttons -->
+                <WrapPanel HorizontalAlignment="Center" Margin="0,8,0,0">
+                    <Button Content="➕  ADD TIME" Style="{StaticResource PrimaryButton}"
+                            Margin="6" MinWidth="180"
+                            Click="AddTimeBtn_Click"/>
+                    <Button Content="⚙  TIME CONFIGURATION" Style="{StaticResource SecondaryButton}"
+                            Margin="6" MinWidth="180"
+                            Click="TimeConfigBtn_Click"/>
+                    <Button x:Name="PauseBtn" Content="⏸  PAUSE TIMER" Style="{StaticResource SecondaryButton}"
+                            Margin="6" MinWidth="180"
+                            Click="PauseBtn_Click"/>
+                    <Button Content="🔒  LOCK COMPUTER" Style="{StaticResource DangerButton}"
+                            Margin="6" MinWidth="180"
+                            Click="LockBtn_Click"/>
+                    <Button Content="📋  TRANSACTIONS" Style="{StaticResource SecondaryButton}"
+                            Margin="6" MinWidth="180"
+                            Click="TransactionsBtn_Click"/>
+                    <Button Content="📜  AUDIT LOGS" Style="{StaticResource SecondaryButton}"
+                            Margin="6" MinWidth="180"
+                            Click="AuditLogsBtn_Click"/>
+                    <Button Content="⚙  SETTINGS" Style="{StaticResource SecondaryButton}"
+                            Margin="6" MinWidth="180"
+                            Click="SettingsBtn_Click"/>
+                </WrapPanel>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Session Timeout Info -->
+        <TextBlock x:Name="SessionTimeoutText" Grid.Row="2"
+                   FontFamily="{StaticResource PrimaryFont}"
+                   FontSize="11" Foreground="{StaticResource MutedTextBrush}"
+                   HorizontalAlignment="Right" Margin="0,12,0,0"/>
+    </Grid>
+</Page>

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TimePay.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+11e0d114d3c41ecf9850d72f61bfbc2a42e59e63")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3c1b6c5cc860ed2b17c4cb7ea1694e88853c2b8a")]
 [assembly: System.Reflection.AssemblyProductAttribute("TimePay.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TimePay.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

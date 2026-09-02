@@ -111,3 +111,5 @@ C:\TimePay\TimePay\TimePay.App\obj\Debug\net8.0-windows\Views\TimerWidgetWindow.
 C:\TimePay\TimePay\TimePay.App\obj\Debug\net8.0-windows\Views\TimerWidgetWindow.g.cs
 C:\TimePay\TimePay\TimePay.App\obj\Debug\net8.0-windows\Views\AuditLogsView.baml
 C:\TimePay\TimePay\TimePay.App\obj\Debug\net8.0-windows\Views\AuditLogsView.g.cs
+C:\TimePay\TimePay\TimePay.App\obj\Debug\net8.0-windows\Views\SecondaryLockOverlay.baml
+C:\TimePay\TimePay\TimePay.App\obj\Debug\net8.0-windows\Views\SecondaryLockOverlay.g.cs

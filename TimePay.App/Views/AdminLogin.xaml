@@ -54,6 +54,14 @@
                         Click="LoginBtn_Click"
                         Margin="0,8,0,0"/>
 
+                <!-- Back / Cancel Button -->
+                <Button x:Name="BackBtn"
+                        Content="← CANCEL / BACK"
+                        Style="{StaticResource SecondaryButton}"
+                        HorizontalAlignment="Stretch"
+                        Click="BackBtn_Click"
+                        Margin="0,8,0,0"/>
+
                 <!-- Failed Attempts Counter -->
                 <TextBlock x:Name="AttemptsText"
                            Foreground="{StaticResource MutedTextBrush}"

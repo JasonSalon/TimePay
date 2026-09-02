@@ -1,4 +1,8 @@
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -17,12 +21,43 @@ namespace TimePay.App;
 /// </summary>
 public partial class App : Application
 {
+    private static Mutex? _singleInstanceMutex;
     private IHost? _host;
 
     public static IServiceProvider Services { get; private set; } = null!;
 
+    [DllImport("user32.dll")]
+    private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    private static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
+
+    [DllImport("user32.dll")]
+    private static extern bool IsIconic(IntPtr hWnd);
+
+    private const int SW_RESTORE = 9;
+
     protected override async void OnStartup(StartupEventArgs e)
     {
+        // Enforce single instance per session
+        try
+        {
+            _singleInstanceMutex = new Mutex(true, @"Local\TimePay_SingleInstance_Mutex", out bool createdNew);
+            if (!createdNew)
+            {
+                BringExistingInstanceToFront();
+                Shutdown();
+                return;
+            }
+        }
+        catch (UnauthorizedAccessException)
+        {
+            // Another instance already owns the mutex
+            BringExistingInstanceToFront();
+            Shutdown();
+            return;
+        }
+
         base.OnStartup(e);
 
         DispatcherUnhandledException += (s, args) =>
@@ -185,8 +220,44 @@ public partial class App : Application
         nav.ClearHistory();
     }
 
+    private static void BringExistingInstanceToFront()
+    {
+        try
+        {
+            var current = Process.GetCurrentProcess();
+            var processes = Process.GetProcessesByName(current.ProcessName);
+            foreach (var process in processes)
+            {
+                if (process.Id != current.Id)
+                {
+                    var hWnd = process.MainWindowHandle;
+                    if (hWnd != IntPtr.Zero)
+                    {
+                        if (IsIconic(hWnd))
+                        {
+                            ShowWindowAsync(hWnd, SW_RESTORE);
+                        }
+                        SetForegroundWindow(hWnd);
+                        break;
+                    }
+                }
+            }
+        }
+        catch
+        {
+            // Best-effort window activation
+        }
+    }
+
     protected override async void OnExit(ExitEventArgs e)
     {
+        if (_singleInstanceMutex != null)
+        {
+            try { _singleInstanceMutex.ReleaseMutex(); } catch { }
+            _singleInstanceMutex.Dispose();
+            _singleInstanceMutex = null;
+        }
+
         if (_host != null)
         {
             await _host.StopAsync();
@@ -195,3 +266,4 @@ public partial class App : Application
         base.OnExit(e);
     }
 }
+

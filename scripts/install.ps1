@@ -99,19 +99,20 @@ $shortcut2.WorkingDirectory = "$installDir\App"
 $shortcut2.Description = "TimePay Windows PC Time Management"
 $shortcut2.Save()
 
-# Windows Startup Folder (All Users)
+# Clean up any legacy Startup folder shortcuts and duplicate HKCU keys
 $commonStartupPath = [Environment]::GetFolderPath("CommonStartup")
-if (Test-Path $commonStartupPath) {
-    $shortcut3 = $WshShell.CreateShortcut("$commonStartupPath\TimePay.lnk")
-    $shortcut3.TargetPath = "$installDir\App\TimePay.App.exe"
-    $shortcut3.WorkingDirectory = "$installDir\App"
-    $shortcut3.Description = "TimePay Windows PC Time Management"
-    $shortcut3.Save()
+if (Test-Path "$commonStartupPath\TimePay.lnk") {
+    Remove-Item -Path "$commonStartupPath\TimePay.lnk" -Force -ErrorAction SilentlyContinue
 }
+$userStartupPath = [Environment]::GetFolderPath("Startup")
+if (Test-Path "$userStartupPath\TimePay.lnk") {
+    Remove-Item -Path "$userStartupPath\TimePay.lnk" -Force -ErrorAction SilentlyContinue
+}
+Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "TimePay" -Force -ErrorAction SilentlyContinue | Out-Null
 
-# Windows Auto-Start on Login (All Users + Current User)
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "TimePay" -Value "`"$installDir\App\TimePay.App.exe`"" -Force | Out-Null
+# Windows Auto-Start on Login (Machine-Wide Single Entry)
 Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "TimePay" -Value "`"$installDir\App\TimePay.App.exe`"" -Force -ErrorAction SilentlyContinue | Out-Null
+
 
 
 Write-Host ""

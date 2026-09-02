@@ -57,11 +57,11 @@ public class WindowsStartupService : IStartupService
         {
             if (OperatingSystem.IsWindows())
             {
-                using var cuKey = Registry.CurrentUser.OpenSubKey(RunRegistryKey, false);
-                if (cuKey?.GetValue(AppName) != null) return true;
-
                 using var lmKey = Registry.LocalMachine.OpenSubKey(RunRegistryKey, false);
                 if (lmKey?.GetValue(AppName) != null) return true;
+
+                using var cuKey = Registry.CurrentUser.OpenSubKey(RunRegistryKey, false);
+                if (cuKey?.GetValue(AppName) != null) return true;
 
                 var commonStartup = Environment.GetFolderPath(Environment.SpecialFolder.CommonStartup);
                 if (!string.IsNullOrEmpty(commonStartup) && File.Exists(Path.Combine(commonStartup, "TimePay.lnk")))
@@ -93,45 +93,39 @@ public class WindowsStartupService : IStartupService
             var exePath = Process.GetCurrentProcess().MainModule?.FileName;
             if (string.IsNullOrEmpty(exePath)) return false;
 
+            // Always clean up legacy startup folder shortcuts to prevent multiple launches
+            CleanupLegacyStartupShortcuts();
+
             if (enable)
             {
-                // 1. Current User Run Key
-                try
+                if (IsRunningAsWindowsAdmin())
                 {
-                    using var cuKey = Registry.CurrentUser.OpenSubKey(RunRegistryKey, true);
-                    cuKey?.SetValue(AppName, $"\"{exePath}\"");
-                }
-                catch { }
-
-                // 2. Local Machine Run Key (Requires Admin, best-effort)
-                try
-                {
-                    using var lmKey = Registry.LocalMachine.OpenSubKey(RunRegistryKey, true);
-                    lmKey?.SetValue(AppName, $"\"{exePath}\"");
-                }
-                catch { }
-
-                // 3. User Startup Folder Shortcut
-                try
-                {
-                    var userStartup = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
-                    if (!string.IsNullOrEmpty(userStartup))
+                    // 1. Local Machine Run Key (authoritative for all users)
+                    try
                     {
-                        CreateShortcut(Path.Combine(userStartup, "TimePay.lnk"), exePath);
+                        using var lmKey = Registry.LocalMachine.OpenSubKey(RunRegistryKey, true);
+                        lmKey?.SetValue(AppName, $"\"{exePath}\"");
                     }
-                }
-                catch { }
+                    catch { }
 
-                // 4. Common (All Users) Startup Folder Shortcut
-                try
-                {
-                    var commonStartup = Environment.GetFolderPath(Environment.SpecialFolder.CommonStartup);
-                    if (!string.IsNullOrEmpty(commonStartup))
+                    // Remove redundant HKCU entry so Windows does not launch TimePay twice
+                    try
                     {
-                        CreateShortcut(Path.Combine(commonStartup, "TimePay.lnk"), exePath);
+                        using var cuKey = Registry.CurrentUser.OpenSubKey(RunRegistryKey, true);
+                        cuKey?.DeleteValue(AppName, false);
                     }
+                    catch { }
                 }
-                catch { }
+                else
+                {
+                    // Standard user: set HKCU only
+                    try
+                    {
+                        using var cuKey = Registry.CurrentUser.OpenSubKey(RunRegistryKey, true);
+                        cuKey?.SetValue(AppName, $"\"{exePath}\"");
+                    }
+                    catch { }
+                }
 
                 return true;
             }
@@ -150,19 +144,6 @@ public class WindowsStartupService : IStartupService
                 {
                     using var lmKey = Registry.LocalMachine.OpenSubKey(RunRegistryKey, true);
                     lmKey?.DeleteValue(AppName, false);
-                }
-                catch { }
-
-                // Remove shortcuts
-                try
-                {
-                    var userStartup = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
-                    var userLnk = Path.Combine(userStartup, "TimePay.lnk");
-                    if (File.Exists(userLnk)) File.Delete(userLnk);
-
-                    var commonStartup = Environment.GetFolderPath(Environment.SpecialFolder.CommonStartup);
-                    var commonLnk = Path.Combine(commonStartup, "TimePay.lnk");
-                    if (File.Exists(commonLnk)) File.Delete(commonLnk);
                 }
                 catch { }
 
@@ -185,24 +166,12 @@ public class WindowsStartupService : IStartupService
             var exePath = Process.GetCurrentProcess().MainModule?.FileName;
             if (string.IsNullOrEmpty(exePath)) return;
 
-            // Ensure HKCU has TimePay run key
-            try
-            {
-                using var cuKey = Registry.CurrentUser.OpenSubKey(RunRegistryKey, true);
-                if (cuKey != null)
-                {
-                    var existing = cuKey.GetValue(AppName) as string;
-                    if (string.IsNullOrEmpty(existing) || !existing.Contains(exePath, StringComparison.OrdinalIgnoreCase))
-                    {
-                        cuKey.SetValue(AppName, $"\"{exePath}\"");
-                    }
-                }
-            }
-            catch { }
+            // Clean up legacy startup folder shortcuts to prevent multiple instances on boot
+            CleanupLegacyStartupShortcuts();
 
-            // Ensure HKLM has TimePay run key if admin
             if (IsRunningAsWindowsAdmin())
             {
+                // Ensure single HKLM Run key
                 try
                 {
                     using var lmKey = Registry.LocalMachine.OpenSubKey(RunRegistryKey, true);
@@ -210,37 +179,44 @@ public class WindowsStartupService : IStartupService
                 }
                 catch { }
 
-                // Ensure Common Startup shortcut exists
+                // Remove duplicate HKCU key if present
                 try
                 {
-                    var commonStartup = Environment.GetFolderPath(Environment.SpecialFolder.CommonStartup);
-                    if (!string.IsNullOrEmpty(commonStartup))
-                    {
-                        var lnkPath = Path.Combine(commonStartup, "TimePay.lnk");
-                        if (!File.Exists(lnkPath))
-                        {
-                            CreateShortcut(lnkPath, exePath);
-                        }
-                    }
+                    using var cuKey = Registry.CurrentUser.OpenSubKey(RunRegistryKey, true);
+                    cuKey?.DeleteValue(AppName, false);
                 }
                 catch { }
             }
             else
             {
-                // Standard/Guest user: Ensure user startup shortcut exists
+                // If HKLM is already configured machine-wide, do not create duplicate HKCU entry
+                bool hasHklm = false;
                 try
                 {
-                    var userStartup = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
-                    if (!string.IsNullOrEmpty(userStartup))
-                    {
-                        var lnkPath = Path.Combine(userStartup, "TimePay.lnk");
-                        if (!File.Exists(lnkPath))
-                        {
-                            CreateShortcut(lnkPath, exePath);
-                        }
-                    }
+                    using var lmKey = Registry.LocalMachine.OpenSubKey(RunRegistryKey, false);
+                    hasHklm = lmKey?.GetValue(AppName) != null;
                 }
                 catch { }
+
+                if (!hasHklm)
+                {
+                    try
+                    {
+                        using var cuKey = Registry.CurrentUser.OpenSubKey(RunRegistryKey, true);
+                        cuKey?.SetValue(AppName, $"\"{exePath}\"");
+                    }
+                    catch { }
+                }
+                else
+                {
+                    // Clean up duplicate HKCU entry since HKLM is already handling it
+                    try
+                    {
+                        using var cuKey = Registry.CurrentUser.OpenSubKey(RunRegistryKey, true);
+                        cuKey?.DeleteValue(AppName, false);
+                    }
+                    catch { }
+                }
             }
         }
         catch
@@ -248,6 +224,31 @@ public class WindowsStartupService : IStartupService
             // Ignore background startup sync errors
         }
     }
+
+    private static void CleanupLegacyStartupShortcuts()
+    {
+        try
+        {
+            var userStartup = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
+            if (!string.IsNullOrEmpty(userStartup))
+            {
+                var userLnk = Path.Combine(userStartup, "TimePay.lnk");
+                if (File.Exists(userLnk)) File.Delete(userLnk);
+            }
+
+            var commonStartup = Environment.GetFolderPath(Environment.SpecialFolder.CommonStartup);
+            if (!string.IsNullOrEmpty(commonStartup))
+            {
+                var commonLnk = Path.Combine(commonStartup, "TimePay.lnk");
+                if (File.Exists(commonLnk)) File.Delete(commonLnk);
+            }
+        }
+        catch
+        {
+            // Best effort
+        }
+    }
+
 
     /// <inheritdoc />
     public void ApplyRolePolicies()

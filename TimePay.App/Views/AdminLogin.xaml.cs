@@ -132,4 +132,29 @@ public partial class AdminLogin : Page
     {
         ErrorText.Visibility = Visibility.Collapsed;
     }
+
+    private async void BackBtn_Click(object sender, RoutedEventArgs e)
+    {
+        using var scope = App.Services.CreateScope();
+        var sessionManager = scope.ServiceProvider.GetRequiredService<ISessionManager>();
+        var nav = App.Services.GetRequiredService<NavigationService>();
+        var mainWindow = Window.GetWindow(this) as MainWindow;
+
+        var session = await sessionManager.GetCurrentSessionAsync();
+        var remaining = await sessionManager.GetRemainingTimeAsync();
+
+        if (session != null && session.Status == SessionStatus.Active && remaining > TimeSpan.Zero)
+        {
+            mainWindow?.ExitKioskMode();
+            var userDashboard = App.Services.GetRequiredService<UserDashboard>();
+            nav.NavigateTo(userDashboard);
+        }
+        else
+        {
+            mainWindow?.EnterKioskMode();
+            var lockScreen = App.Services.GetRequiredService<LockScreen>();
+            nav.NavigateTo(lockScreen);
+        }
+        nav.ClearHistory();
+    }
 }

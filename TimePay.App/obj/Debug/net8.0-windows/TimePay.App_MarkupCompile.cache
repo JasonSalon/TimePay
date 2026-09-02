@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP
 C:\TimePay\TimePay\TimePay.App\App.xaml
-13-1202174290
+14-1295347655
 
-191564311459
+22-193047028
 238-1863128019
-MainWindow.xaml;Themes\DarkTheme.xaml;Views\AddTime.xaml;Views\AdminDashboard.xaml;Views\AdminLogin.xaml;Views\AuditLogsView.xaml;Views\LockScreen.xaml;Views\SettingsView.xaml;Views\SetupWizard.xaml;Views\TimeConfiguration.xaml;Views\TimerWidgetWindow.xaml;Views\Transactions.xaml;Views\UserDashboard.xaml;
+MainWindow.xaml;Themes\DarkTheme.xaml;Views\AddTime.xaml;Views\AdminDashboard.xaml;Views\AdminLogin.xaml;Views\AuditLogsView.xaml;Views\LockScreen.xaml;Views\SecondaryLockOverlay.xaml;Views\SettingsView.xaml;Views\SetupWizard.xaml;Views\TimeConfiguration.xaml;Views\TimerWidgetWindow.xaml;Views\Transactions.xaml;Views\UserDashboard.xaml;
 
 False
 

@@ -27,11 +27,17 @@
                                Margin="0,2,0,0"/>
                 </StackPanel>
             </StackPanel>
-            <Button x:Name="LogoutBtn" Content="LOG OUT"
-                    Style="{StaticResource SecondaryButton}"
-                    DockPanel.Dock="Right"
-                    VerticalAlignment="Top"
-                    Click="LogoutBtn_Click"/>
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Top">
+                <Button x:Name="ExitAppBtn" Content="⏻ EXIT TIMEPAY"
+                        Style="{StaticResource DangerButton}"
+                        Padding="14,8"
+                        Margin="0,0,10,0"
+                        Click="ExitAppBtn_Click"/>
+                <Button x:Name="LogoutBtn" Content="LOG OUT"
+                        Style="{StaticResource SecondaryButton}"
+                        Padding="14,8"
+                        Click="LogoutBtn_Click"/>
+            </StackPanel>
         </DockPanel>
 
         <!-- Dashboard Content -->

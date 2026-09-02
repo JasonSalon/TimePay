@@ -4,16 +4,16 @@
 winexe
 C#
 .cs
-C:\TimePay\TimePay\TimePay.App\obj\Release\net8.0-windows\
+c:\TimePay\TimePay\TimePay.App\obj\Release\net8.0-windows\
 TimePay.App
 none
 false
 TRACE;RELEASE;NET;NET8_0;NETCOREAPP
-C:\TimePay\TimePay\TimePay.App\App.xaml
+c:\TimePay\TimePay\TimePay.App\App.xaml
 14-1295347655
 
 22-190045801
-238-1459557427
+238-1599485096
 MainWindow.xaml;Themes\DarkTheme.xaml;Views\AddTime.xaml;Views\AdminDashboard.xaml;Views\AdminLogin.xaml;Views\AuditLogsView.xaml;Views\LockScreen.xaml;Views\SecondaryLockOverlay.xaml;Views\SettingsView.xaml;Views\SetupWizard.xaml;Views\TimeConfiguration.xaml;Views\TimerWidgetWindow.xaml;Views\Transactions.xaml;Views\UserDashboard.xaml;
 
 False

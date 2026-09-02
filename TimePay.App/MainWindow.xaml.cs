@@ -24,6 +24,7 @@ public partial class MainWindow : Window
     private const int SC_KEYMENU = 0xF100;
 
     private bool _isKioskLocked = false;
+    private bool _isExplicitExitAllowed = false;
     private readonly List<SecondaryLockOverlay> _secondaryOverlays = new();
 
     public bool IsKioskLocked => _isKioskLocked;
@@ -47,14 +48,33 @@ public partial class MainWindow : Window
 
     private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
-        if (msg == WM_SYSCOMMAND && _isKioskLocked)
+        if (msg == WM_SYSCOMMAND)
         {
             int command = wParam.ToInt32() & 0xFFF0;
-            if (command == SC_MINIMIZE || command == SC_CLOSE || command == SC_MOVE ||
-                command == SC_SIZE || command == SC_KEYMENU || command == SC_RESTORE)
+            if (_isKioskLocked)
             {
-                handled = true;
-                return IntPtr.Zero;
+                if (command == SC_MINIMIZE || command == SC_CLOSE || command == SC_MOVE ||
+                    command == SC_SIZE || command == SC_KEYMENU || command == SC_RESTORE)
+                {
+                    handled = true;
+                    return IntPtr.Zero;
+                }
+            }
+            else if (command == SC_CLOSE)
+            {
+                var adminSession = App.Services?.GetService<AdminSessionService>();
+                bool isAdmin = adminSession != null && adminSession.IsLoggedIn;
+
+                if (!isAdmin && !_isExplicitExitAllowed && MainFrame.Content is not SetupWizard)
+                {
+                    handled = true;
+                    // If user is on the User Dashboard during paid time, minimize to HUD instead of closing
+                    if (MainFrame.Content is UserDashboard)
+                    {
+                        WindowState = WindowState.Minimized;
+                    }
+                    return IntPtr.Zero;
+                }
             }
         }
         return IntPtr.Zero;
@@ -191,27 +211,74 @@ public partial class MainWindow : Window
         MainFrame.Navigate(page);
     }
 
+    /// <summary>
+    /// Programmatic exit method called when an authenticated administrator explicitly confirms application shutdown.
+    /// </summary>
+    public void ForceClose()
+    {
+        _isExplicitExitAllowed = true;
+        ExitKioskMode();
+        Close();
+    }
+
     private void MainWindow_Closing(object? sender, CancelEventArgs e)
     {
-        // Allow close if Admin is logged in or if in SetupWizard
-        if (MainFrame.Content is AdminDashboard || MainFrame.Content is SetupWizard)
+        // 1. If explicit programmatic exit was approved
+        if (_isExplicitExitAllowed)
         {
             ExitKioskMode();
             return;
         }
 
+        // 2. Allow close if SetupWizard is active (initial first-time setup before admin exists)
+        if (MainFrame.Content is SetupWizard)
+        {
+            var result = MessageBox.Show(
+                "TimePay initial setup is not yet complete. Are you sure you want to exit setup?",
+                "Exit Setup",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                _isExplicitExitAllowed = true;
+                ExitKioskMode();
+                return;
+            }
+            e.Cancel = true;
+            return;
+        }
+
+        // 3. If an authenticated Admin clicks [X] on the window
         var adminSession = App.Services?.GetService<AdminSessionService>();
         if (adminSession != null && adminSession.IsLoggedIn)
         {
-            ExitKioskMode();
+            var result = MessageBox.Show(
+                "Are you sure you want to exit TimePay?\n\nThis will stop time enforcement and PC monitoring.",
+                "Confirm Exit TimePay",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                _isExplicitExitAllowed = true;
+                ExitKioskMode();
+                return;
+            }
+            e.Cancel = true;
             return;
         }
 
-        // Prevent ordinary user / guest from closing TimePay lock screen or active dashboard
-        if (_isKioskLocked || MainFrame.Content is LockScreen || MainFrame.Content is UserDashboard)
+        // 4. If on UserDashboard during active session, minimize to HUD instead of closing
+        if (MainFrame.Content is UserDashboard)
         {
             e.Cancel = true;
+            WindowState = WindowState.Minimized;
+            return;
         }
+
+        // 5. In all other scenarios (LockScreen, AdminLogin, unauthenticated states), block close completely!
+        e.Cancel = true;
     }
 
     [StructLayout(LayoutKind.Sequential)]

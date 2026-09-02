@@ -322,6 +322,35 @@ public partial class AdminDashboard : Page
         nav.ClearHistory();
     }
 
+    private async void ExitAppBtn_Click(object sender, RoutedEventArgs e)
+    {
+        RecordActivity();
+
+        var result = MessageBox.Show(
+            "Are you sure you want to completely exit TimePay?\n\nThis will terminate time enforcement, disable the lock screen, and close the application.",
+            "Confirm Exit TimePay",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning);
+
+        if (result == MessageBoxResult.Yes)
+        {
+            try
+            {
+                using var scope = App.Services.CreateScope();
+                var auditLogger = scope.ServiceProvider.GetRequiredService<IAuditLogger>();
+                var adminSession = App.Services.GetRequiredService<AdminSessionService>();
+                await auditLogger.LogAsync(
+                    AuditAction.ServiceStopped,
+                    adminSession.CurrentAdminUsername ?? "Admin",
+                    "Admin confirmed exit of TimePay application");
+            }
+            catch { }
+
+            var mainWindow = Window.GetWindow(this) as MainWindow;
+            mainWindow?.ForceClose();
+        }
+    }
+
     private void RecordActivity()
     {
         var adminSession = App.Services.GetRequiredService<AdminSessionService>();
